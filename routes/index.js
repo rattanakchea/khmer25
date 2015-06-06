@@ -20,8 +20,19 @@ router.get('/about', function(req, res){
 router.get('/addJob', function(req, res){
 	var job = new Job({title: "Developer",
 						description: "web dev"});
-	job.save(function(err){
+	job.save(function(err, job){
+		if (err){
+			res.status(500).json({
+				'status': 500,
+				'message': 'Internal Error!'
+			});
+			return;
+		}
 
+		res.json({
+			'Job': job,
+			'success':'susccess'
+		});
 	});
 
 });

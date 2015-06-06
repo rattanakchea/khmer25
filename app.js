@@ -8,6 +8,7 @@ var mongoose = require('mongoose'); // use mongose driver for connecting with mo
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var apiV1 = require('./routes/api/v1')
 
 var app = express();
 
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/api/v1', apiV1);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -40,9 +42,13 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
+    // res.render('error', {
+    //   message: err.message,
+    //   error: err
+    // });
+    res.json({
+      'message': err.message,
+      'error': err
     });
   });
 
