@@ -24,6 +24,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// allow cross domain request
+app.use(function(req, res, next) {
+    // CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');  // restrict it to the required domain
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+
+    // Set custom headers for CORS
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization, X-Access-Token, X-Key');
+    next();
+});
+
 app.use('/', routes);
 app.use('/users', users);
 app.use('/api/v1', apiV1);

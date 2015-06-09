@@ -37,6 +37,59 @@ var authentication = {
 
 			res.json(genToken(user));
 		});
+	},
+
+	// middleware check if you authenicated
+	auth: function(req, res, next){
+		var token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || (req.headers['x-access-token']);
+
+		if (token){
+			try{
+				var decoded = jwt.decode(token, secret());
+
+	  			if (decoded.exp <= Date.now()){
+	  				res.status(401).json({
+	  					'status': 401,
+	  					'message': 'Token Expired'
+	  				});
+	  				return;
+	  			}
+
+	  			User.findOne({_id: decoded.iss}, function(err, user){
+	  				if (err){
+	  					res.status(500);
+	  					res.json({
+	  						'status': 500,
+	  						'message': 'Internal Error'
+	  					});
+	  					return;
+	  				}
+
+	  				if (!user){
+	  					res.status(401);
+	  					res.json({
+	  						'status': 401,
+	  						'message': 'Invalid User'
+	  					});
+	  					return;
+	  				}
+
+	  				next();
+	  			});
+			}catch(err){
+				res.status(500).json({
+	  				'status': 500,
+	  				'message': 'Oops something went wrong',
+	  				'error': err
+	  			});	
+			}
+		}else{
+			res.status(401).json({
+	  			'status': 401,
+	  			'message': 'Invalid Token or Key'
+	  		});
+	  		return;
+		}
 	}
 }
 
